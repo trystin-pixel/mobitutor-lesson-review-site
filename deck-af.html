@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Les 1: Afstand, Gradiënt & Middelpunt</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold: #FFCC00;
+    --navy: #00112E;
+    --bg: #FFFFFF;
+    --card: #F5F5F5;
+    --ink: #00112E;
+    --sub: #5B6472;
+    --line: #E7E7E7;
+    --panel: #FFFFFF;
+    --good: #15803D;
+    --good-bg: #F0FDF4;
+    --bad: #B91C1C;
+    --bad-bg: #FEF2F2;
+    --graph-line: var(--navy);
+    --graph-helper: var(--gold);
+    --graph-mid: var(--gold);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:#EDEEF0;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  h1,h2,.brand-word,.nbtn,.btn-sm,.btn-ghost{font-family:'Poppins',sans-serif;}
+
+  #stage{
+    width:100%;
+    max-width:1040px;
+    height:660px;
+    max-height:91vh;
+    background:var(--panel);
+    border-radius:22px;
+    box-shadow:0 2px 4px rgba(0,17,46,.06), 0 24px 60px -24px rgba(0,17,46,.35);
+    border:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  #brandbar{
+    background:var(--navy);
+    padding:10px 28px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex:none;
+  }
+  #brandbar img{height:34px; width:auto; display:block;}
+  .brand-word{font-size:16px; font-weight:700; color:var(--gold); letter-spacing:-.01em;}
+  .brand-word .hi{color:#fff;}
+  #brandbar .series{
+    margin-left:auto; color:#B9C0CC; font-size:12.5px; font-weight:500; font-family:'Inter',sans-serif;
+  }
+
+  .slide{
+    position:absolute; inset:0;
+    display:none;
+    padding:30px 48px 18px;
+    flex-direction:column;
+    animation: fadein .35s ease;
+    overflow-y:auto;
+  }
+  .slide.active{display:flex;}
+  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .eyebrow{
+    display:inline-block; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--navy); font-weight:700; margin-bottom:12px; background:var(--gold);
+    padding:4px 12px; border-radius:20px; width:fit-content;
+  }
+  h1{font-size:36px; font-weight:800; margin:0 0 6px; letter-spacing:-0.02em; color:var(--navy);}
+  h2{font-size:24px; font-weight:700; margin:0 0 16px; letter-spacing:-0.01em; color:var(--navy);}
+  .sub{color:var(--sub); font-size:16px; margin:0;}
+  .tag{color:var(--sub); font-size:13.5px; margin-top:auto; padding-top:16px;}
+
+  .slide-title{align-items:flex-start; justify-content:center;}
+  .slide-title h1{font-size:48px;}
+  .accent-bar{width:52px; height:6px; background:var(--gold); border-radius:3px; margin-bottom:20px;}
+
+  .slide-section{align-items:flex-start; justify-content:center;}
+  .slide-section .num{font-size:13px; font-weight:700; color:var(--navy); letter-spacing:.08em; text-transform:uppercase; margin-bottom:12px; background:var(--gold); padding:4px 12px; border-radius:20px; width:fit-content;}
+  .slide-section h1{font-size:42px;}
+
+  ul.bullets{list-style:none; margin:0; padding:0;}
+  ul.bullets li{
+    font-size:18px; padding:13px 0 13px 32px; position:relative;
+    border-bottom:1px solid var(--line); color:#242B36;
+  }
+  ul.bullets li:last-child{border-bottom:none;}
+  ul.bullets li::before{
+    content:""; position:absolute; left:0; top:21px; width:8px; height:8px;
+    border-radius:50%; background:var(--gold); box-shadow:0 0 0 3px rgba(255,204,0,.25);
+  }
+
+  .card{background:var(--card); border-radius:14px; padding:16px 18px;}
+
+  .example-body{display:flex; gap:26px;}
+  .example-left{width:250px; flex:none; display:flex; align-items:flex-start; justify-content:center; padding-top:4px;}
+  .example-right{flex:1; display:flex; flex-direction:column; justify-content:flex-start; gap:13px; min-width:0;}
+  .context{font-size:15px; color:#242B36; margin-bottom:8px; line-height:1.4;}
+  .step{border-left:3px solid var(--gold); padding-left:14px; display:none;}
+  .step.on{display:block; animation: stepin .4s ease;}
+  @keyframes stepin{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+  .step .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--sub); font-weight:700; margin-bottom:3px;}
+  .step .math{font-size:16.5px; color:var(--navy);}
+
+  svg.plane{width:100%; height:auto; max-height:300px;}
+  .axis{stroke:#C9CBD0; stroke-width:1.4;}
+  .gridline{stroke:#EEEEEF; stroke-width:1;}
+  .segment{stroke:var(--graph-line); stroke-width:3.4; stroke-linecap:round;}
+  .helper{stroke:var(--graph-helper); stroke-width:2; stroke-dasharray:5 4;}
+  .pt{fill:var(--navy);}
+  .pt-label{font-size:12.5px; font-weight:700; fill:var(--navy); font-family:'Inter',sans-serif;}
+  .mid{fill:var(--graph-mid); stroke:var(--navy); stroke-width:1;}
+
+  .instructions{background:var(--card); border-radius:14px; padding:16px 20px; margin-bottom:20px;}
+  .instructions div{font-size:15px; color:#3A4250; padding:3px 0;}
+  ol.items{margin:0; padding:0; list-style:none; counter-reset:item;}
+  ol.items li{
+    counter-increment:item; font-size:18px; padding:11px 0 11px 42px; position:relative;
+    border-bottom:1px solid var(--line);
+  }
+  ol.items li:last-child{border-bottom:none;}
+  ol.items li::before{
+    content:counter(item); position:absolute; left:0; top:9px; width:25px; height:25px;
+    border-radius:50%; background:var(--navy); color:var(--gold); font-size:12.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  table.formulas{width:100%; border-collapse:collapse; margin-top:6px;}
+  table.formulas td{padding:15px 10px; border-bottom:1px solid var(--line); font-size:18px;}
+  table.formulas td:first-child{font-weight:700; color:var(--navy); width:126px; font-size:14px; text-transform:uppercase; letter-spacing:.05em;}
+  .note{margin-top:18px; color:var(--sub); font-size:14px; font-style:italic;}
+
+  #nav{
+    width:100%; max-width:1040px; display:flex; align-items:center; gap:14px; margin-top:16px;
+  }
+  #progress{flex:1; height:5px; background:#DCDEE2; border-radius:3px; overflow:hidden;}
+  #progress-fill{height:100%; background:var(--gold); width:0%; transition:width .3s ease;}
+  .nbtn{
+    border:none; font-weight:600;
+    font-size:13.5px; padding:10px 18px; border-radius:22px; cursor:pointer;
+    background:var(--gold); color:var(--navy);
+    box-shadow:0 2px 8px rgba(255,204,0,.35);
+  }
+  .nbtn:hover{filter:brightness(1.05);}
+  .nbtn:disabled{opacity:.35; cursor:default; box-shadow:none;}
+  #prevBtn{background:#fff; color:var(--navy); border:1.5px solid var(--line); box-shadow:none;}
+  #prevBtn:hover{border-color:var(--navy);}
+  #counter{font-size:12.5px; color:var(--sub); font-family:'JetBrains Mono',monospace; min-width:52px; text-align:center;}
+  .katex{font-size:1em;}
+
+  #scroll-hint{
+    position:absolute; left:0; right:0; bottom:0; height:52px;
+    display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px;
+    background:linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,.98) 70%);
+    pointer-events:none; opacity:0; transition:opacity .25s ease; z-index:6;
+  }
+  #scroll-hint.show{opacity:1;}
+  #scroll-hint span{
+    font-size:12px; font-weight:700; color:var(--navy); background:var(--gold);
+    padding:5px 14px; border-radius:20px; box-shadow:0 2px 8px rgba(0,17,46,.15);
+    animation: hintbounce 1.4s ease-in-out infinite;
+  }
+  @keyframes hintbounce{0%,100%{transform:translateY(0);} 50%{transform:translateY(4px);}}
+
+  .blank-box{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px;}
+  .blank-prompt{font-size:14.5px; color:#242B36; margin-bottom:8px;}
+  .blank-row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  input.ans{
+    font-family:'JetBrains Mono',monospace; font-size:14.5px; padding:8px 10px;
+    border:1.5px solid var(--line); border-radius:8px; width:110px; background:#fff; color:var(--navy);
+  }
+  input.ans:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(255,204,0,.25);}
+  .btn-sm{
+    border:none; background:var(--gold); color:var(--navy); font-weight:700;
+    font-size:13px; padding:8px 15px; border-radius:20px; cursor:pointer;
+  }
+  .btn-sm:hover{filter:brightness(1.05);}
+  .btn-ghost{
+    border:1.5px solid var(--navy); background:#fff; color:var(--navy); font-weight:600;
+    font-size:12.5px; padding:7px 13px; border-radius:20px; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .btn-ghost:hover{background:var(--navy); color:#fff;}
+  .feedback{margin-top:8px; font-size:13.5px; font-weight:700; padding:7px 10px; border-radius:8px; display:none;}
+  .feedback.show{display:block;}
+  .feedback.correct{background:var(--good-bg); color:var(--good);}
+  .feedback.incorrect{background:var(--bad-bg); color:var(--bad);}
+  .hint-text{margin-top:6px; font-size:13px; color:var(--sub); font-style:italic; display:none;}
+  .hint-text.show{display:block;}
+
+  .self-explain{background:#FFFCF0; border:1px solid #F5E7A8; border-radius:14px; padding:12px 16px; margin-top:14px; flex:none;}
+  .step.self-explain{border-left:none; padding-left:16px;}
+  .self-explain .q{font-size:14px; font-weight:700; color:var(--navy); margin-bottom:6px; line-height:1.3;}
+  .self-explain textarea{
+    width:100%; min-height:36px; font-family:'Inter',sans-serif; font-size:13.5px; padding:8px 10px;
+    border:1.5px solid var(--line); border-radius:8px; resize:vertical; color:var(--navy);
+  }
+  .self-explain textarea:focus{outline:none; border-color:var(--gold);}
+  .self-explain .blank-row{margin-top:6px !important;}
+  .self-explain .model-answer{margin-top:8px; font-size:13px; color:#3A4250; background:#fff; border-left:3px solid var(--gold); padding:8px 10px; border-radius:0 8px 8px 0; display:none;}
+  .self-explain .model-answer.show{display:block;}
+
+  .explore-body{display:flex; gap:28px; align-items:flex-start;}
+  .explore-left{width:340px; flex:none;}
+  .explore-right{flex:1; display:flex; flex-direction:column; gap:13px; padding-top:4px;}
+  svg.explore-svg{width:100%; height:auto; cursor:default;}
+  .drag-pt{cursor:grab;}
+  .drag-pt:active{cursor:grabbing;}
+  .explore-readout{border-left:3px solid var(--navy); padding-left:13px;}
+  .explore-readout .lbl{font-size:11.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--sub); font-weight:700; margin-bottom:2px;}
+  .explore-readout .math{font-size:18px; color:var(--navy);}
+  .explore-callout{margin-top:6px; padding:10px 12px; border-radius:10px; font-size:13.5px; font-weight:700; display:none;}
+  .explore-callout.show{display:block;}
+  .explore-callout.zero{background:#FFF7E0; color:#8A6300;}
+  .explore-callout.undef{background:var(--bad-bg); color:var(--bad);}
+  .explore-hint{color:var(--sub); font-size:13px; margin-top:auto;}
+
+  .practice-body{display:flex; gap:28px;}
+  .practice-left{width:270px; flex:none;}
+  .practice-right{flex:1; display:flex; flex-direction:column; gap:13px; min-width:0;}
+  .practice-field{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .practice-field label{font-size:13.5px; font-weight:700; color:var(--navy); width:105px; flex:none;}
+  .score-badge{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--navy); margin-left:auto;
+    background:var(--gold); padding:6px 14px; border-radius:20px; font-weight:700;
+  }
+  .practice-actions{display:flex; gap:10px; margin-top:4px;}
+
+  @media (max-width: 720px){
+    html,body{height:100%; margin:0;}
+    body{
+      height:100vh; height:100dvh;
+      overflow:hidden;
+      justify-content:flex-start; align-items:stretch;
+      padding:12px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    }
+    #stage{
+      flex:1; min-height:0; width:100%; max-width:100%;
+      border-radius:18px;
+      margin-bottom:12px;
+    }
+    #brandbar{padding:9px 14px; gap:8px;}
+    #brandbar img{height:26px;}
+    .brand-word{font-size:13px;}
+    #brandbar .series{font-size:10px;}
+
+    .slide{
+      padding:18px 16px 16px;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    h1{font-size:24px;}
+    h2{font-size:18px; margin-bottom:10px;}
+    .slide-title h1{font-size:30px;}
+    .slide-section h1{font-size:26px;}
+    .sub{font-size:14px;}
+    .eyebrow{font-size:10px; padding:3px 10px; margin-bottom:8px;}
+
+    ul.bullets li{font-size:15px; padding:10px 0 10px 26px;}
+
+    .example-body{flex-direction:column; gap:14px;}
+    .example-left{width:100%;}
+    svg.plane{max-height:220px; max-width:260px; margin:0 auto; display:block;}
+    .example-right{gap:10px;}
+    .context{font-size:13.5px; margin-bottom:4px;}
+    .step .math{font-size:14.5px;}
+    .step .lbl{font-size:10px;}
+
+    .self-explain{padding:10px 12px; margin-top:10px;}
+    .self-explain .q{font-size:13px;}
+
+    .instructions{padding:12px 14px;}
+    ol.items li{font-size:15px; padding:9px 0 9px 36px;}
+    table.formulas td{padding:11px 8px; font-size:15px;}
+
+    .explore-body, .practice-body{flex-direction:column; gap:14px;}
+    .explore-left, .practice-left{width:100%;}
+    svg.explore-svg{max-width:280px; margin:0 auto; display:block;}
+    .practice-field label{width:88px; font-size:12.5px;}
+    .practice-actions{flex-wrap:wrap;}
+    .practice-actions .btn-sm, .practice-actions .btn-ghost{flex:1; min-width:100px; text-align:center;}
+
+    input.ans{font-size:16px; padding:11px 12px; min-height:44px;}
+    .btn-sm, .btn-ghost{padding:12px 16px; font-size:13.5px; min-height:44px;}
+
+    #nav{
+      flex:none; max-width:100%; width:100%; margin:0; padding:0 4px;
+      gap:10px;
+    }
+    #progress{height:5px;}
+    .nbtn{padding:13px 20px; font-size:14px; min-height:46px;}
+    #counter{font-size:12px; min-width:40px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="brandbar">
+    <span class="brand-word">Mobi<span class="hi">Tutor</span>ZA</span>
+    <span class="series"></span>
+  </div>
+  <div id="slides-root" style="position:relative; flex:1;"></div>
+  <div id="scroll-hint"><span>&#8595; scroll for more</span></div>
+</div>
+<div id="nav">
+  <button class="nbtn" id="prevBtn">&larr; Vorige</button>
+  <div id="progress"><div id="progress-fill"></div></div>
+  <span id="counter"></span>
+  <button class="nbtn" id="nextBtn">Volgende &rarr;</button>
+</div>
+
+<script>
+const LESSON = {"lesson_id": "G10-AG-L1", "series": "Graad 10 Wiskunde", "unit": "Analitiese Meetkunde", "lesson_title": "Les 1: Afstand, Gradiënt & Middelpunt", "subtitle": "'n Informele Ondersoek", "accent": "#FFCC00", "accent2": "#00112E", "slides": [{"type": "title", "heading": "Analitiese Meetkunde", "sub": "Afstand • Gradiënt • Middelpunt", "tag": "Graad 10 Wiskunde — Les 1", "narration": "Welkom by Graad 10 Analitiese Meetkunde. In hierdie les ondersoek ons informeel drie idees: die afstand tussen twee punte, die gradiënt van 'n lynstuk, en die middelpunt van 'n lynstuk."}, {"type": "text", "heading": "Waar hierdie les inpas", "bullets": ["Les 1 — Informele ondersoek (vandag)", "Les 2 — Afleiding van die formules", "Les 3 — Toepassings gekoppel aan veelhoeke"], "narration": "Dit is die eerste van drie lesse. Vandag bou ons intuïsie op deur voorbeelde op die Cartesiese vlak deur te werk. Volgende les lei ons die algemene formules af, en daarna pas ons dit toe op veelhoeke."}, {"type": "text", "heading": "Vandag se doel", "bullets": ["Vind die gradiënt van 'n lynstuk", "Vind die afstand tussen twee punte", "Vind die middelpunt van 'n lynstuk"], "narration": "Vir elke voorbeeld beantwoord ons dieselfde drie vrae: wat is die gradiënt van die lynstuk, wat is die afstand tussen die twee punte, en wat is die middelpunt van die lynstuk?"}, {"type": "section", "heading": "Deel 1", "sub": "Lynstukke vanaf die Oorsprong", "narration": "Kom ons begin met die eenvoudigste geval: 'n lynstuk wat die oorsprong met 'n enkele punt verbind."}, {"type": "graph_example", "heading": "Voorbeeld 1 — Positiewe gradiënt", "context": "Beskou die punt P(−3 ; −5) in die derde kwadrant.", "O": [0, 0], "P": [-3, -5], "labelO": "O(0;0)", "labelP": "P(-3;-5)", "steps": [{"label": "Δx, Δy", "math": "\\Delta x = -3 \\qquad \\Delta y = -5"}, {"label": "Gradiënt", "math": "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{-5}{-3} = \\dfrac{5}{3} \\; (>0)"}, {"label": "Afstand (Pythagoras)", "math": "OP = \\sqrt{(\\Delta x)^2 + (\\Delta y)^2} = \\sqrt{3^2+5^2} = \\sqrt{34}"}, {"label": "Middelpunt", "math": "M = \\left(\\dfrac{0+(-3)}{2} \\, ; \\, \\dfrac{0+(-5)}{2}\\right) = \\left(-1\\tfrac12 \\, ; \\, -2\\tfrac12\\right)"}], "narration": "Beskou die punt P by negatief drie, negatief vyf, in die derde kwadrant. Vanaf die oorsprong is delta x negatief drie en delta y negatief vyf, dus is die gradiënt negatief vyf oor negatief drie, wat positief vyf derdes is. Aangesien die lynstuk 'n reghoekige driehoek met die asse vorm, gee die stelling van Pythagoras ons die afstand: die vierkantswortel van drie in die kwadraat plus vyf in die kwadraat, wat die vierkantswortel van 34 is. Die middelpunt word gevind deur die koördinate te gemiddeld: negatief een en 'n half, negatief twee en 'n half.", "self_explain": {"question": "Beide Δx en Δy was hier negatief — waarom maak dit die gradiënt positief?", "expected": "'n Negatiewe gedeel deur 'n negatiewe is positief. Meetkundig, soos x afneem, neem y ook af — die lyn styg steeds van links na regs, dus is die gradiënt positief."}}, {"type": "graph_example", "heading": "Voorbeeld 2 — Negatiewe gradiënt", "context": "Beskou die punt P(−4 ; 5) in die tweede kwadrant.", "O": [0, 0], "P": [-4, 5], "labelO": "O(0;0)", "labelP": "P(-4;5)", "steps": [{"label": "Δx, Δy", "math": "\\Delta x = -4 \\qquad \\Delta y = 5"}, {"label": "Gradiënt", "math": "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{5}{-4} = -\\dfrac{5}{4} \\; (<0)"}, {"label": "Afstand (Pythagoras)", "math": "OP = \\sqrt{(\\Delta x)^2 + (\\Delta y)^2} = \\sqrt{4^2+5^2} = \\sqrt{41}"}, {"label": "Middelpunt", "math": "M = \\left(\\dfrac{0+(-4)}{2} \\, ; \\, \\dfrac{0+5}{2}\\right) = \\left(-2 \\, ; \\, 2\\tfrac12\\right)"}], "narration": "Beskou nou P by negatief vier, vyf, in die tweede kwadrant. Hier is delta x negatief vier en delta y positief vyf, dus is die gradiënt vyf oor negatief vier, wat negatief vyf kwarte is — 'n negatiewe gradiënt. Die afstand is die vierkantswortel van vier in die kwadraat plus vyf in die kwadraat, die vierkantswortel van 41. Deur die koördinate te gemiddeld, kry ons die middelpunt: negatief twee, twee en 'n half.", "self_explain": {"question": "Waarom is hierdie gradiënt negatief, terwyl Voorbeeld 1 s'n positief was?", "expected": "Hier het Δx en Δy teenoorgestelde tekens (een positief, een negatief), dus is hul verhouding negatief. Soos x toeneem, neem y af — die lyn val van links na regs."}}, {"type": "section", "heading": "Deel 2", "sub": "Lynstukke Tussen Enige Twee Punte", "narration": "Kom ons beweeg nou weg van die oorsprong en kyk na lynstukke wat enige twee algemene punte verbind."}, {"type": "graph_example", "heading": "Voorbeeld 3 — Negatiewe gradiënt", "context": "Beskou die punte P(2 ; 3) en R(5 ; −2).", "O": [2, 3], "P": [5, -2], "labelO": "P(2;3)", "labelP": "R(5;-2)", "steps": [{"label": "Δx, Δy", "math": "\\Delta x = 5-2 = 3 \\qquad \\Delta y = -2-3 = -5"}, {"label": "Gradiënt", "math": "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{-5}{3} \\; (<0)"}, {"label": "Afstand (Pythagoras)", "math": "PR = \\sqrt{(\\Delta x)^2 + (\\Delta y)^2} = \\sqrt{3^2+5^2} = \\sqrt{34}"}, {"label": "Middelpunt", "math": "M = \\left(\\dfrac{2+5}{2} \\, ; \\, \\dfrac{3+(-2)}{2}\\right) = \\left(3\\tfrac12 \\, ; \\, \\tfrac12\\right)"}], "narration": "Beskou die punte P by twee, drie, en R by vyf, negatief twee. Delta x is drie, delta y is negatief vyf, wat 'n negatiewe gradiënt van negatief vyf derdes gee. Die afstand is die vierkantswortel van drie in die kwadraat plus vyf in die kwadraat, die vierkantswortel van 34. Die middelpunt, gevind deur albei koördinate te gemiddeld, is drie en 'n half, een half.", "self_explain": {"question": "Hierdie lynstuk raak nie eens die oorsprong nie — verander dit hoe jy Δx en Δy vind?", "expected": "Nee — jy trek steeds ooreenstemmende koördinate af: Δx = x₂ − x₁ en Δy = y₂ − y₁. Dit werk dieselfde ongeag of die oorsprong betrokke is."}}, {"type": "graph_example", "heading": "Voorbeeld 4 — Nul gradiënt", "context": "Beskou die punte P(2 ; 3) en R(−3 ; 3).", "O": [2, 3], "P": [-3, 3], "labelO": "P(2;3)", "labelP": "R(-3;3)", "steps": [{"label": "Δx, Δy", "math": "\\Delta x = -3-2 = -5 \\qquad \\Delta y = 3-3 = 0"}, {"label": "Gradiënt", "math": "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{0}{-5} = 0"}, {"label": "Afstand", "math": "PR = |\\Delta x| = 5"}, {"label": "Middelpunt", "math": "M = \\left(\\dfrac{2+(-3)}{2} \\, ; \\, \\dfrac{3+3}{2}\\right) = \\left(-\\tfrac12 \\, ; \\, 3\\right)"}], "narration": "Nou P by twee, drie, en R by negatief drie, drie. Aangesien albei punte dieselfde y-koördinaat deel, is delta y nul, dus is die gradiënt nul — 'n horisontale lynstuk. Die afstand is bloot die horisontale gaping, vyf eenhede. Die middelpunt is negatief een half, drie.", "self_explain": {"question": "Waarom gee 'n gedeelde y-koördinaat altyd 'n gradiënt van nul?", "expected": "As y₁ = y₂ dan is Δy = 0, en 0 gedeel deur enigiets (behalwe 0) is 0. 'n Nul gradiënt beteken altyd 'n horisontale lynstuk."}}, {"type": "graph_example", "heading": "Voorbeeld 5 — Onbepaalde gradiënt", "context": "Beskou die punte P(2 ; 3) en R(2 ; −2).", "O": [2, 3], "P": [2, -2], "labelO": "P(2;3)", "labelP": "R(2;-2)", "steps": [{"label": "Δx, Δy", "math": "\\Delta x = 2-2 = 0 \\qquad \\Delta y = -2-3 = -5"}, {"label": "Gradiënt", "math": "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{-5}{0} \\; \\Rightarrow \\; \\text{onbepaald}"}, {"label": "Afstand", "math": "PR = |\\Delta y| = 5"}, {"label": "Middelpunt", "math": "M = \\left(\\dfrac{2+2}{2} \\, ; \\, \\dfrac{3+(-2)}{2}\\right) = \\left(2 \\, ; \\, \\tfrac12\\right)"}], "narration": "Laastens, P by twee, drie, en R by twee, negatief twee. Albei punte deel dieselfde x-koördinaat, dus is delta x nul — en deling deur nul beteken die gradiënt is onbepaald. Dit is 'n vertikale lynstuk. Die afstand is die vertikale gaping, vyf eenhede, en die middelpunt is twee, een half.", "self_explain": {"question": "Waarom kan ons nie net sê die gradiënt is nul hier ook, soos in Voorbeeld 4 nie?", "expected": "Hier is dit Δx wat nul is, nie Δy nie, dus sou ons deur nul deel — wat onmoontlik is, nie nul nie. Dis waarom die gradiënt onbepaald is eerder as 0, en die lynstuk vertikaal is eerder as horisontaal."}}, {"type": "explore", "heading": "Probeer dit self", "instructions": "Sleep punt R rond op die vlak. Kyk hoe die gradiënt, afstand en middelpunt intyds opdateer — en sien wat gebeur wanneer R presies bo, onder, of langs P inlyn.", "P_fixed": [2, 3], "R_start": [5, -2], "bounds": [-6, 6, -6, 6], "narration": "Probeer dit nou self: sleep punt R rond en kyk hoe die gradiënt, afstand en middelpunt herbereken word terwyl jy dit beweeg.", "video_skip": true}, {"type": "formula_summary", "heading": "Die patroon tot dusver", "rows": [["Gradiënt", "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{y_2-y_1}{x_2-x_1}"], ["Afstand", "d = \\sqrt{(\\Delta x)^2+(\\Delta y)^2} = \\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}"], ["Middelpunt", "M = \\left(\\dfrac{x_1+x_2}{2} \\, ; \\, \\dfrac{y_1+y_2}{2}\\right)"]], "note": "Ons sal dit formeel aflei en bewys in Les 2.", "narration": "Let op die patroon oor elke voorbeeld: die gradiënt is delta y oor delta x, die afstand kom altyd van Pythagoras op delta x en delta y, en die middelpunt is altyd die gemiddelde van die koördinate. Ons sal hierdie algemene formules formeel aflei en bewys in Les 2."}, {"type": "list", "heading": "Tutoriaal 1 — Informele Ondersoeke", "instructions": ["Voltooi 'n toepaslike skets op die Cartesiese vlak", "Bepaal informeel: (a) die gradiënt  (b) die afstand  (c) die middelpunt"], "items": ["O(0;0) and P(5;−3)", "P(5;3) and R(1;−2)", "P(5;4) and R(5;−2)", "P(3;−3) and R(−4;−3)"], "narration": "Hier is vier probleme om self te probeer. Skets vir elke paar punte hulle op die Cartesiese vlak, en vind dan die gradiënt, die afstand, en die middelpunt van die lynstuk wat hulle verbind. Pouseer hier as jy dit wil probeer voordat jy die oplossings sien."}, {"type": "graph_example", "heading": "Oplossing 1", "context": "O(0 ; 0) en P(5 ; −3)", "O": [0, 0], "P": [5, -3], "labelO": "O(0;0)", "labelP": "P(5;-3)", "steps": [{"label": "Gradiënt", "math": "m = \\dfrac{-3-0}{5-0} = -\\dfrac{3}{5} \\; (<0)"}, {"label": "Afstand", "math": "OP = \\sqrt{5^2+3^2} = \\sqrt{34}"}, {"label": "Middelpunt", "math": "M = \\left(\\dfrac{0+5}{2} \\, ; \\, \\dfrac{0+(-3)}{2}\\right) = \\left(2\\tfrac12 \\, ; \\, -1\\tfrac12\\right)"}], "narration": "Probleem een: O by die oorsprong en P by vyf, negatief drie. Die gradiënt is negatief drie oor vyf. Die afstand is die vierkantswortel van vyf in die kwadraat plus drie in die kwadraat, die vierkantswortel van 34. Die middelpunt is twee en 'n half, negatief een en 'n half."}, {"type": "graph_example", "heading": "Oplossing 2", "context": "P(5 ; 3) en R(1 ; −2)", "O": [5, 3], "P": [1, -2], "labelO": "P(5;3)", "labelP": "R(1;-2)", "steps": [{"label": "Gradiënt", "math": "m = \\dfrac{3-(-2)}{5-1} = \\dfrac{5}{4} \\; (>0)"}, {"label": "Afstand", "math": "PR = \\sqrt{4^2+5^2} = \\sqrt{41}"}, {"label": "Middelpunt", "math": "M = \\left(\\dfrac{5+1}{2} \\, ; \\, \\dfrac{3+(-2)}{2}\\right) = \\left(3 \\, ; \\, \\tfrac12\\right)", "blank": true, "prompt": "Wat is die middelpunt van PR? (voer in as twee getalle, bv. 3, 0.5)", "answer_type": "point", "answer_value": [3, 0.5], "hint": "Gemiddeld die x-koördinate, dan gemiddeld die y-koördinate: ((5+1)/2, (3+(-2))/2)."}], "narration": "Probleem twee: P by vyf, drie, en R by een, negatief twee. Die gradiënt is vyf kwarte, 'n positiewe gradiënt. Die afstand is die vierkantswortel van vier in die kwadraat plus vyf in die kwadraat, die vierkantswortel van 41. Die middelpunt is drie, een half."}, {"type": "graph_example", "heading": "Oplossing 3", "context": "P(5 ; 4) en R(5 ; −2)", "O": [5, 4], "P": [5, -2], "labelO": "P(5;4)", "labelP": "R(5;-2)", "steps": [{"label": "Gradiënt", "math": "m = \\dfrac{4-(-2)}{5-5} = \\dfrac{6}{0} \\; \\Rightarrow \\; \\text{onbepaald}"}, {"label": "Afstand", "math": "PR = |4-(-2)| = 6", "blank": true, "prompt": "Wat is die afstand PR?", "answer_type": "number", "answer_value": 6, "hint": "Albei punte deel x = 5, dus is PR net die gaping tussen die y-waardes: |4 - (-2)|."}, {"label": "Middelpunt", "math": "M = \\left(5 \\, ; \\, \\dfrac{4+(-2)}{2}\\right) = \\left(5 \\, ; \\, 1\\right)", "blank": true, "prompt": "Wat is die middelpunt van PR? (voer in as twee getalle)", "answer_type": "point", "answer_value": [5, 1], "hint": "Die x-koördinaat bly 5. Gemiddeld die y-waardes: (4 + (-2)) / 2."}], "narration": "Probleem drie: P by vyf, vier, en R by vyf, negatief twee. Albei x-koördinate is vyf, dus is die gradiënt onbepaald — 'n vertikale lynstuk. Die afstand is bloot die vertikale gaping, ses eenhede. Die middelpunt is vyf, een."}, {"type": "graph_example", "heading": "Oplossing 4", "context": "P(3 ; −3) en R(−4 ; −3)", "O": [3, -3], "P": [-4, -3], "labelO": "P(3;-3)", "labelP": "R(-4;-3)", "steps": [{"label": "Gradiënt", "math": "m = \\dfrac{-3-(-3)}{-4-3} = \\dfrac{0}{-7} = 0", "blank": true, "prompt": "Wat is die gradiënt van PR?", "answer_type": "number", "answer_value": 0, "hint": "Albei y-waardes is -3, dus is Δy = 0. Wat doen 'n nul Δy aan die gradiënt?"}, {"label": "Afstand", "math": "PR = |3-(-4)| = 7", "blank": true, "prompt": "Wat is die afstand PR?", "answer_type": "number", "answer_value": 7, "hint": "Albei punte deel y = -3, dus is PR net die horisontale gaping: |3 - (-4)|."}, {"label": "Middelpunt", "math": "M = \\left(\\dfrac{3+(-4)}{2} \\, ; \\, -3\\right) = \\left(-\\tfrac12 \\, ; \\, -3\\right)", "blank": true, "prompt": "Wat is die middelpunt van PR? (voer in as twee getalle)", "answer_type": "point", "answer_value": [-0.5, -3], "hint": "Gemiddeld die x-waardes: (3 + (-4)) / 2. Die y-koördinaat bly -3."}], "narration": "Probleem vier: P by drie, negatief drie, en R by negatief vier, negatief drie. Albei y-koördinate stem ooreen, dus is die gradiënt nul — 'n horisontale lynstuk. Die afstand is die horisontale gaping, sewe eenhede. Die middelpunt is negatief een half, negatief drie."}, {"type": "section", "heading": "Goed gedaan", "sub": "Volgende les: aflei van die algemene formules", "narration": "Dit voltooi ons informele ondersoek. In die volgende les lei ons die algemene formules vir gradiënt, afstand en middelpunt af, en bewys ons waarom dit vir enige twee punte op die Cartesiese vlak werk."}, {"type": "practice", "heading": "Oefening: Gradiënt, Afstand & Middelpunt", "instructions": "Werk die gradiënt, afstand, en middelpunt uit vir die twee punte gewys, en gaan dan jou antwoorde na. Genereer 'n nuwe probleem wanneer jy gereed is.", "range": [-6, 6], "narration": "Nou is dit jou beurt om soveel van hierdie te oefen as wat jy wil.", "video_skip": true}], "brand": "MobiTutorZA"};
+document.querySelector('#brandbar .series').textContent = LESSON.series + ' — ' + LESSON.unit;
+
+function katexHtml(tex){
+  try{ return katex.renderToString(tex, {throwOnError:false}); }catch(e){ return tex; }
+}
+
+function parseNumberToken(str){
+  str = (str||'').trim().replace(/−/g,'-');
+  if(str === '') return null;
+  let m = str.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
+  if(m){
+    let whole = parseFloat(m[1]), num = parseFloat(m[2]), den = parseFloat(m[3]);
+    let sign = whole < 0 ? -1 : 1;
+    return whole + sign * (num/den);
+  }
+  m = str.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+  if(m){
+    return parseFloat(m[1]) / parseFloat(m[2]);
+  }
+  if(/^-?\d+(\.\d+)?$/.test(str)) return parseFloat(str);
+  return NaN;
+}
+
+function isUndefinedText(str){
+  str = (str||'').trim().toLowerCase();
+  return ['undefined','undef','no gradient','vertical','n/a','infinite','infinity','onbepaald','geen gradiënt','vertikaal','n.v.t.','oneindig'].includes(str);
+}
+
+function parsePointToken(str){
+  str = (str||'').trim().replace(/−/g,'-');
+  let cleaned = str.replace(/^\(|\)$/g,'');
+  let parts = cleaned.split(/[,;]/).map(s=>s.trim()).filter(s=>s.length);
+  if(parts.length !== 2) return null;
+  let a = parseNumberToken(parts[0]);
+  let b = parseNumberToken(parts[1]);
+  if(a===null || b===null || isNaN(a) || isNaN(b)) return null;
+  return [a,b];
+}
+
+function nearlyEqual(a,b,tol){ tol = tol===undefined?0.05:tol; return Math.abs(a-b) < tol; }
+
+function planeGeometry(pts, W, H, pad){
+  const allx = pts.map(p=>p[0]).concat([0]);
+  const ally = pts.map(p=>p[1]).concat([0]);
+  const minx = Math.min(...allx)-1.5, maxx = Math.max(...allx)+1.5;
+  const miny = Math.min(...ally)-1.5, maxy = Math.max(...ally)+1.5;
+  const sx = (W-2*pad)/(maxx-minx), sy=(H-2*pad)/(maxy-miny);
+  const s = Math.min(sx,sy);
+  return {
+    minx, maxx, miny, maxy, s,
+    cx: x => pad + (x-minx)*s,
+    cy: y => (H-pad) - (y-miny)*s
+  };
+}
+
+function drawPlane(O, P, labelO, labelP){
+  const pad = 40, W=250, H=250;
+  const geo = planeGeometry([O,P], W, H, pad);
+  const {cx, cy, minx, maxx, miny, maxy} = geo;
+
+  let svg = `<svg class="plane" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  for(let gx=Math.ceil(minx); gx<=Math.floor(maxx); gx++){
+    svg += `<line class="gridline" x1="${cx(gx)}" y1="${pad}" x2="${cx(gx)}" y2="${H-pad}"/>`;
+  }
+  for(let gy=Math.ceil(miny); gy<=Math.floor(maxy); gy++){
+    svg += `<line class="gridline" x1="${pad}" y1="${cy(gy)}" x2="${W-pad}" y2="${cy(gy)}"/>`;
+  }
+  svg += `<line class="axis" x1="${pad}" y1="${cy(0)}" x2="${W-pad}" y2="${cy(0)}"/>`;
+  svg += `<line class="axis" x1="${cx(0)}" y1="${pad}" x2="${cx(0)}" y2="${H-pad}"/>`;
+  svg += `<line class="helper" x1="${cx(O[0])}" y1="${cy(O[1])}" x2="${cx(P[0])}" y2="${cy(O[1])}"/>`;
+  svg += `<line class="helper" x1="${cx(P[0])}" y1="${cy(O[1])}" x2="${cx(P[0])}" y2="${cy(P[1])}"/>`;
+  svg += `<line class="segment" x1="${cx(O[0])}" y1="${cy(O[1])}" x2="${cx(P[0])}" y2="${cy(P[1])}"/>`;
+  const mx=(O[0]+P[0])/2, my=(O[1]+P[1])/2;
+  svg += `<circle class="mid" cx="${cx(mx)}" cy="${cy(my)}" r="4.5"/>`;
+  svg += `<circle class="pt" cx="${cx(O[0])}" cy="${cy(O[1])}" r="4.5"/>`;
+  svg += `<circle class="pt" cx="${cx(P[0])}" cy="${cy(P[1])}" r="4.5"/>`;
+  svg += `<text class="pt-label" x="${cx(O[0])+8}" y="${cy(O[1])-8}">${labelO}</text>`;
+  svg += `<text class="pt-label" x="${cx(P[0])+8}" y="${cy(P[1])-8}">${labelP}</text>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderSlide(s, idx){
+  let cls = "slide", inner = "";
+  if(s.type === "title"){
+    cls += " slide-title";
+    inner = `<div class="accent-bar"></div><h1>${s.heading}</h1><p class="sub">${s.sub}</p><div class="tag">${s.tag}</div>`;
+  }
+  else if(s.type === "section"){
+    cls += " slide-section";
+    inner = `<div class="num">${LESSON.unit}</div><h1>${s.heading}</h1><p class="sub">${s.sub}</p>`;
+  }
+  else if(s.type === "text"){
+    inner = `<div class="eyebrow">${LESSON.unit}</div><h2>${s.heading}</h2>
+      <ul class="bullets">${s.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>`;
+  }
+  else if(s.type === "graph_example"){
+    const stepsHtml = s.steps.map((st,i)=>{
+      if(st.blank){
+        return `<div class="step" data-i="${i}">
+          <div class="lbl">${st.label}</div>
+          <div class="blank-box" data-blank-slide="${idx}" data-blank-step="${i}">
+            <div class="blank-prompt">${st.prompt || ('Wat is die ' + st.label.toLowerCase() + '?')}</div>
+            <div class="blank-row">
+              <input class="ans" type="text" placeholder="${st.answer_type==='point' ? 'bv. 3, 0.5' : 'bv. 5/4'}" />
+              <button class="btn-sm" data-action="check">Gaan na</button>
+              <button class="btn-ghost" data-action="hint">Wenk</button>
+            </div>
+            <div class="feedback"></div>
+            <div class="hint-text">${st.hint || ''}</div>
+            <div class="math revealed-math" style="display:none; margin-top:8px;">${katexHtml(st.math)}</div>
+          </div>
+        </div>`;
+      }
+      return `<div class="step" data-i="${i}">
+        <div class="lbl">${st.label}</div>
+        <div class="math">${katexHtml(st.math)}</div>
+      </div>`;
+    }).join("");
+    let selfExplainHtml = "";
+    if(s.self_explain){
+      selfExplainHtml = `<div class="step self-explain" data-i="${s.steps.length}">
+        <div class="q">${s.self_explain.question}</div>
+        <textarea placeholder="Tik jou antwoord in jou eie woorde..."></textarea>
+        <div class="blank-row" style="margin-top:8px;">
+          <button class="btn-ghost" data-action="reveal-model">Wys modelantwoord</button>
+        </div>
+        <div class="model-answer">${s.self_explain.expected}</div>
+      </div>`;
+    }
+    inner = `<div class="eyebrow">${LESSON.unit}</div><h2>${s.heading}</h2>
+      <div class="context">${s.context}</div>
+      <div class="example-body">
+        <div class="example-left">${drawPlane(s.O, s.P, s.labelO, s.labelP)}</div>
+        <div class="example-right">${stepsHtml}</div>
+      </div>
+      ${selfExplainHtml}`;
+  }
+  else if(s.type === "list"){
+    inner = `<div class="eyebrow">${LESSON.unit}</div><h2>${s.heading}</h2>
+      <div class="instructions">${s.instructions.map(t=>`<div>${t}</div>`).join("")}</div>
+      <ol class="items">${s.items.map(i=>`<li>${katexHtml(i)}</li>`).join("")}</ol>`;
+  }
+  else if(s.type === "formula_summary"){
+    inner = `<div class="eyebrow">${LESSON.unit}</div><h2>${s.heading}</h2>
+      <table class="formulas">${s.rows.map(r=>`<tr><td>${r[0]}</td><td>${katexHtml(r[1])}</td></tr>`).join("")}</table>
+      <div class="note">${s.note}</div>`;
+  }
+  else if(s.type === "explore"){
+    inner = `<div class="eyebrow">${LESSON.unit}</div><h2>${s.heading}</h2>
+      <div class="context">${s.instructions}</div>
+      <div class="explore-body" id="explore-${idx}">
+        <div class="explore-left" id="explore-svg-holder-${idx}"></div>
+        <div class="explore-right" id="explore-readout-${idx}">
+          <div class="explore-readout"><div class="lbl">Δx, Δy</div><div class="math" id="explore-delta-${idx}"></div></div>
+          <div class="explore-readout"><div class="lbl">Gradiënt</div><div class="math" id="explore-grad-${idx}"></div></div>
+          <div class="explore-readout"><div class="lbl">Afstand</div><div class="math" id="explore-dist-${idx}"></div></div>
+          <div class="explore-readout"><div class="lbl">Middelpunt</div><div class="math" id="explore-mid-${idx}"></div></div>
+          <div class="explore-callout" id="explore-callout-${idx}"></div>
+          <div class="explore-hint">Sleep die goue punt (R).</div>
+        </div>
+      </div>`;
+  }
+  else if(s.type === "practice"){
+    inner = `<div class="eyebrow">${LESSON.unit}</div><h2>${s.heading}</h2>
+      <div class="context">${s.instructions}</div>
+      <div class="practice-body" id="practice-${idx}">
+        <div class="practice-left" id="practice-svg-holder-${idx}"></div>
+        <div class="practice-right">
+          <div style="display:flex; align-items:center;">
+            <div class="context" id="practice-points-${idx}" style="margin:0;"></div>
+            <div class="score-badge" id="practice-score-${idx}">0 / 0</div>
+          </div>
+          <div class="practice-field">
+            <label>Gradient</label>
+            <input class="ans" type="text" id="practice-grad-input-${idx}" placeholder="bv. 5/4 of onbepaald"/>
+            <span class="feedback" id="practice-grad-fb-${idx}" style="display:inline-block; margin-top:0;"></span>
+          </div>
+          <div class="practice-field">
+            <label>Distance</label>
+            <input class="ans" type="text" id="practice-dist-input-${idx}" placeholder="bv. 5.1"/>
+            <span class="feedback" id="practice-dist-fb-${idx}" style="display:inline-block; margin-top:0;"></span>
+          </div>
+          <div class="practice-field">
+            <label>Midpoint</label>
+            <input class="ans" type="text" id="practice-mid-input-${idx}" placeholder="bv. 3, 0.5"/>
+            <span class="feedback" id="practice-mid-fb-${idx}" style="display:inline-block; margin-top:0;"></span>
+          </div>
+          <div class="practice-actions">
+            <button class="btn-sm" data-action="practice-check" data-idx="${idx}">Gaan antwoorde na</button>
+            <button class="btn-ghost" data-action="practice-solution" data-idx="${idx}">Wys oplossing</button>
+            <button class="btn-ghost" data-action="practice-new" data-idx="${idx}">Nuwe probleem</button>
+          </div>
+        </div>
+      </div>`;
+  }
+  return `<div class="${cls}" id="slide-${idx}">${inner}</div>`;
+}
+
+const stage = document.getElementById('slides-root');
+LESSON.slides.forEach((s,i)=>{ stage.innerHTML += renderSlide(s,i); });
+
+stage.addEventListener('click', function(e){
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const action = btn.dataset.action;
+
+  if(action === 'check'){
+    const box = btn.closest('.blank-box');
+    const slideIdx = parseInt(box.dataset.blankSlide, 10);
+    const stepIdx = parseInt(box.dataset.blankStep, 10);
+    const step = LESSON.slides[slideIdx].steps[stepIdx];
+    const input = box.querySelector('input.ans');
+    const fb = box.querySelector('.feedback');
+    const revealed = box.querySelector('.revealed-math');
+    let correct = false;
+    const raw = input.value;
+
+    if(step.answer_type === 'point'){
+      const p = parsePointToken(raw);
+      correct = p && nearlyEqual(p[0], step.answer_value[0]) && nearlyEqual(p[1], step.answer_value[1]);
+    } else if(step.answer_type === 'undefined'){
+      correct = isUndefinedText(raw);
+    } else {
+      if(isUndefinedText(raw)){ correct = false; }
+      else {
+        const v = parseNumberToken(raw);
+        correct = (v !== null && !isNaN(v) && nearlyEqual(v, step.answer_value));
+      }
+    }
+
+    fb.classList.remove('correct','incorrect');
+    fb.classList.add('show');
+    if(correct){
+      fb.textContent = "Korrek!";
+      fb.classList.add('correct');
+      revealed.style.display = 'block';
+      input.disabled = true;
+      btn.disabled = true;
+    } else {
+      fb.textContent = "Nie heeltemal reg nie — probeer weer, of gebruik die wenk.";
+      fb.classList.add('incorrect');
+    }
+  }
+
+  else if(action === 'hint'){
+    const box = btn.closest('.blank-box');
+    box.querySelector('.hint-text').classList.toggle('show');
+  }
+
+  else if(action === 'reveal-model'){
+    const box = btn.closest('.self-explain');
+    box.querySelector('.model-answer').classList.toggle('show');
+  }
+
+  else if(action === 'practice-check'){
+    practiceCheck(parseInt(btn.dataset.idx,10));
+  }
+  else if(action === 'practice-solution'){
+    practiceShowSolution(parseInt(btn.dataset.idx,10));
+  }
+  else if(action === 'practice-new'){
+    practiceNewProblem(parseInt(btn.dataset.idx,10));
+  }
+});
+
+const exploreState = {};
+
+function fmtNum(n){
+  if(Math.abs(n - Math.round(n)) < 1e-9) return String(Math.round(n));
+  return n.toFixed(1);
+}
+
+function renderExplore(idx, s){
+  const W = 320, H = 320, pad = 36;
+  const [bx0,bx1,by0,by1] = s.bounds;
+  const sx = (W-2*pad)/(bx1-bx0), sy=(H-2*pad)/(by1-by0);
+  const scale = Math.min(sx,sy);
+  const cx = x => pad + (x-bx0)*scale;
+  const cy = y => (H-pad) - (y-by0)*scale;
+  const invx = px => bx0 + (px-pad)/scale;
+  const invy = py => by0 + ((H-pad)-py)/scale;
+
+  let svg = `<svg class="explore-svg" id="explore-svg-${idx}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  for(let gx=Math.ceil(bx0); gx<=Math.floor(bx1); gx++){
+    svg += `<line class="gridline" x1="${cx(gx)}" y1="${pad}" x2="${cx(gx)}" y2="${H-pad}"/>`;
+  }
+  for(let gy=Math.ceil(by0); gy<=Math.floor(by1); gy++){
+    svg += `<line class="gridline" x1="${pad}" y1="${cy(gy)}" x2="${W-pad}" y2="${cy(gy)}"/>`;
+  }
+  svg += `<line class="axis" x1="${pad}" y1="${cy(0)}" x2="${W-pad}" y2="${cy(0)}"/>`;
+  svg += `<line class="axis" x1="${cx(0)}" y1="${pad}" x2="${cx(0)}" y2="${H-pad}"/>`;
+  svg += `<g id="explore-dynamic-${idx}"></g>`;
+  svg += `</svg>`;
+
+  document.getElementById(`explore-svg-holder-${idx}`).innerHTML = svg;
+
+  exploreState[idx] = { P: s.P_fixed.slice(), R: s.R_start.slice(), cx, cy, invx, invy, W, H, dragging:false };
+  updateExplore(idx);
+
+  const svgEl = document.getElementById(`explore-svg-${idx}`);
+  const getPos = (evt) => {
+    const rect = svgEl.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    const px = (clientX - rect.left) * (W / rect.width);
+    const py = (clientY - rect.top) * (H / rect.height);
+    return [px, py];
+  };
+  const onDown = (evt) => { exploreState[idx].dragging = true; evt.preventDefault(); };
+  const onMove = (evt) => {
+    if(!exploreState[idx].dragging) return;
+    const [px,py] = getPos(evt);
+    let rx = Math.round(exploreState[idx].invx(px));
+    let ry = Math.round(exploreState[idx].invy(py));
+    rx = Math.max(bx0, Math.min(bx1, rx));
+    ry = Math.max(by0, Math.min(by1, ry));
+    exploreState[idx].R = [rx, ry];
+    updateExplore(idx);
+  };
+  const onUp = () => { if(exploreState[idx]) exploreState[idx].dragging = false; };
+
+  svgEl.addEventListener('mousedown', (e)=>{ if(e.target.dataset.role==='dragpt') onDown(e); });
+  svgEl.addEventListener('touchstart', (e)=>{ if(e.target.dataset.role==='dragpt') onDown(e); }, {passive:false});
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, {passive:false});
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchend', onUp);
+}
+
+function updateExplore(idx){
+  const st = exploreState[idx];
+  if(!st) return;
+  const {P,R,cx,cy} = st;
+  const dx = R[0]-P[0], dy = R[1]-P[1];
+
+  let dyn = `<line class="helper" x1="${cx(P[0])}" y1="${cy(P[1])}" x2="${cx(R[0])}" y2="${cy(P[1])}"/>`;
+  dyn += `<line class="helper" x1="${cx(R[0])}" y1="${cy(P[1])}" x2="${cx(R[0])}" y2="${cy(R[1])}"/>`;
+  dyn += `<line class="segment" x1="${cx(P[0])}" y1="${cy(P[1])}" x2="${cx(R[0])}" y2="${cy(R[1])}"/>`;
+  const mx=(P[0]+R[0])/2, my=(P[1]+R[1])/2;
+  dyn += `<circle class="mid" cx="${cx(mx)}" cy="${cy(my)}" r="4.5"/>`;
+  dyn += `<circle class="pt" cx="${cx(P[0])}" cy="${cy(P[1])}" r="5"/>`;
+  dyn += `<text class="pt-label" x="${cx(P[0])+8}" y="${cy(P[1])-8}">P(${fmtNum(P[0])};${fmtNum(P[1])})</text>`;
+  dyn += `<circle class="pt drag-pt" data-role="dragpt" fill="var(--gold)" stroke="var(--navy)" stroke-width="1.5" cx="${cx(R[0])}" cy="${cy(R[1])}" r="8"/>`;
+  dyn += `<text class="pt-label" x="${cx(R[0])+10}" y="${cy(R[1])-10}">R(${fmtNum(R[0])};${fmtNum(R[1])})</text>`;
+
+  document.getElementById(`explore-dynamic-${idx}`).innerHTML = dyn;
+
+  document.getElementById(`explore-delta-${idx}`).innerHTML =
+    katexHtml(`\\Delta x = ${fmtNum(dx)} \\qquad \\Delta y = ${fmtNum(dy)}`);
+
+  const callout = document.getElementById(`explore-callout-${idx}`);
+  callout.classList.remove('show','zero','undef');
+
+  if(dx === 0){
+    document.getElementById(`explore-grad-${idx}`).innerHTML = katexHtml(`m \\Rightarrow \\text{undefined}`);
+    callout.textContent = "Δx = 0 — die gradiënt is onbepaald. Hierdie lynstuk is vertikaal!";
+    callout.classList.add('show','undef');
+  } else {
+    const m = dy/dx;
+    document.getElementById(`explore-grad-${idx}`).innerHTML = katexHtml(`m = \\dfrac{\\Delta y}{\\Delta x} = ${fmtNum(m)}`);
+    if(dy === 0){
+      callout.textContent = "Δy = 0 — die gradiënt is nul. Hierdie lynstuk is horisontaal!";
+      callout.classList.add('show','zero');
+    }
+  }
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  document.getElementById(`explore-dist-${idx}`).innerHTML = katexHtml(`d = \\sqrt{(\\Delta x)^2+(\\Delta y)^2} = ${dist.toFixed(2)}`);
+  document.getElementById(`explore-mid-${idx}`).innerHTML = katexHtml(`M = (${fmtNum(mx)} \\, ; \\, ${fmtNum(my)})`);
+}
+
+const practiceState = {};
+
+function practiceGen(range){
+  const [lo,hi] = range;
+  function randInt(){ return Math.floor(Math.random()*(hi-lo+1))+lo; }
+  let P,R;
+  const mode = Math.random();
+  do {
+    P = [randInt(), randInt()];
+    if(mode < 0.2){ R = [randInt(), P[1]]; }
+    else if(mode < 0.4){ R = [P[0], randInt()]; }
+    else { R = [randInt(), randInt()]; }
+  } while(R[0]===P[0] && R[1]===P[1]);
+  return {P,R};
+}
+
+function practiceCompute(P,R){
+  const dx = R[0]-P[0], dy = R[1]-P[1];
+  const grad = dx === 0 ? null : dy/dx;
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  const mid = [(P[0]+R[0])/2, (P[1]+R[1])/2];
+  return {dx,dy,grad,dist,mid};
+}
+
+function practiceRenderProblem(idx){
+  const {P,R} = practiceState[idx];
+  document.getElementById(`practice-svg-holder-${idx}`).innerHTML =
+    drawPlane(P, R, `P(${P[0]};${P[1]})`, `R(${R[0]};${R[1]})`);
+  document.getElementById(`practice-points-${idx}`).textContent = `P(${P[0]}; ${P[1]}) and R(${R[0]}; ${R[1]})`;
+  ['grad','dist','mid'].forEach(k=>{
+    document.getElementById(`practice-${k}-input-${idx}`).value = '';
+    document.getElementById(`practice-${k}-input-${idx}`).disabled = false;
+    const fb = document.getElementById(`practice-${k}-fb-${idx}`);
+    fb.textContent = ''; fb.className = 'feedback';
+  });
+}
+
+function practiceNewProblem(idx){
+  const s = LESSON.slides[idx];
+  practiceState[idx].problem = practiceGen(s.range);
+  practiceState[idx].P = practiceState[idx].problem.P;
+  practiceState[idx].R = practiceState[idx].problem.R;
+  practiceRenderProblem(idx);
+}
+
+function practiceCheck(idx){
+  const {P,R} = practiceState[idx];
+  const correct = practiceCompute(P,R);
+  let numCorrect = 0;
+
+  const gradInput = document.getElementById(`practice-grad-input-${idx}`).value;
+  const gradFb = document.getElementById(`practice-grad-fb-${idx}`);
+  let gradOk;
+  if(correct.grad === null){ gradOk = isUndefinedText(gradInput); }
+  else {
+    const v = parseNumberToken(gradInput);
+    gradOk = !isUndefinedText(gradInput) && v !== null && !isNaN(v) && nearlyEqual(v, correct.grad, 0.06);
+  }
+  gradFb.textContent = gradOk ? 'Korrek' : 'Probeer weer';
+  gradFb.className = 'feedback show ' + (gradOk ? 'correct' : 'incorrect');
+  if(gradOk) numCorrect++;
+
+  const distInput = document.getElementById(`practice-dist-input-${idx}`).value;
+  const distFb = document.getElementById(`practice-dist-fb-${idx}`);
+  const dv = parseNumberToken(distInput);
+  const distOk = dv !== null && !isNaN(dv) && nearlyEqual(dv, correct.dist, 0.1);
+  distFb.textContent = distOk ? 'Korrek' : 'Probeer weer';
+  distFb.className = 'feedback show ' + (distOk ? 'correct' : 'incorrect');
+  if(distOk) numCorrect++;
+
+  const midInput = document.getElementById(`practice-mid-input-${idx}`).value;
+  const midFb = document.getElementById(`practice-mid-fb-${idx}`);
+  const mp = parsePointToken(midInput);
+  const midOk = mp && nearlyEqual(mp[0], correct.mid[0], 0.05) && nearlyEqual(mp[1], correct.mid[1], 0.05);
+  midFb.textContent = midOk ? 'Korrek' : 'Probeer weer';
+  midFb.className = 'feedback show ' + (midOk ? 'correct' : 'incorrect');
+  if(midOk) numCorrect++;
+
+  practiceState[idx].attempted = true;
+  practiceState[idx].total += 1;
+  if(numCorrect === 3) practiceState[idx].score += 1;
+  document.getElementById(`practice-score-${idx}`).textContent = `${practiceState[idx].score} / ${practiceState[idx].total}`;
+}
+
+function practiceShowSolution(idx){
+  const {P,R} = practiceState[idx];
+  const c = practiceCompute(P,R);
+  document.getElementById(`practice-grad-input-${idx}`).value = c.grad === null ? 'onbepaald' : fmtNum(c.grad);
+  document.getElementById(`practice-dist-input-${idx}`).value = c.dist.toFixed(2);
+  document.getElementById(`practice-mid-input-${idx}`).value = `${fmtNum(c.mid[0])}, ${fmtNum(c.mid[1])}`;
+}
+
+function initPractice(idx, s){
+  practiceState[idx] = { score:0, total:0, attempted:false };
+  practiceNewProblem(idx);
+}
+
+let current = 0;
+const total = LESSON.slides.length;
+const slideEls = document.querySelectorAll('.slide');
+const initedInteractive = new Set();
+
+const scrollHint = document.getElementById('scroll-hint');
+const raf = window.requestAnimationFrame ? window.requestAnimationFrame.bind(window) : function(cb){ setTimeout(cb, 16); };
+function updateScrollHint(){
+  const el = slideEls[current];
+  if(!el || !scrollHint) return;
+  const hasMore = (el.scrollHeight - el.scrollTop - el.clientHeight) > 8;
+  scrollHint.classList.toggle('show', hasMore);
+}
+slideEls.forEach(el => el.addEventListener('scroll', updateScrollHint, {passive:true}));
+new MutationObserver(() => raf(updateScrollHint))
+  .observe(document.getElementById('slides-root'), {childList:true, subtree:true, attributes:true, attributeFilter:['class','style']});
+window.addEventListener('resize', updateScrollHint);
+
+function show(i){
+  current = Math.max(0, Math.min(total-1, i));
+  slideEls.forEach((el,j)=> el.classList.toggle('active', j===current));
+  document.getElementById('progress-fill').style.width = ((current+1)/total*100)+"%";
+  document.getElementById('counter').textContent = (current+1)+" / "+total;
+  document.getElementById('prevBtn').disabled = current===0;
+  document.getElementById('nextBtn').disabled = current===total-1;
+  const steps = slideEls[current].querySelectorAll('.step');
+  steps.forEach(st=>st.classList.remove('on'));
+  slideEls[current].scrollTop = 0;
+  raf(updateScrollHint);
+
+  const s = LESSON.slides[current];
+  if(s.type === 'explore' && !initedInteractive.has(current)){
+    renderExplore(current, s);
+    initedInteractive.add(current);
+  }
+  if(s.type === 'practice' && !initedInteractive.has(current)){
+    initPractice(current, s);
+    initedInteractive.add(current);
+  }
+}
+document.getElementById('nextBtn').onclick = ()=> {
+  const steps = slideEls[current].querySelectorAll('.step:not(.on)');
+  if(steps.length>0){ steps[0].classList.add('on'); raf(updateScrollHint); return; }
+  show(current+1);
+};
+document.getElementById('prevBtn').onclick = ()=> show(current-1);
+document.addEventListener('keydown', e=>{
+  const tag = (e.target.tagName||'').toLowerCase();
+  if(tag === 'input' || tag === 'textarea') return;
+  if(e.key==='ArrowRight') document.getElementById('nextBtn').click();
+  if(e.key==='ArrowLeft') document.getElementById('prevBtn').click();
+});
+show(0);
+</script>
+</body>
+</html>
