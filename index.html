@@ -7,49 +7,132 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  :root{--gold:#FFCC00;--navy:#00112E;--ink:#00112E;--sub:#5B6472;--line:#E7E7E7;--bg:#FFFCF0;--panel:#FFFFFF;--card:#F5F5F5;}
+  :root{
+    --gold:#FFCC00;
+    --navy:#00112E;
+    --ink:#00112E;
+    --sub:#5B6472;
+    --line:#E7E7E7;
+    --bg:#FFFCF0;
+    --panel:#FFFFFF;
+    --card:#F5F5F5;
+  }
   *{box-sizing:border-box;}
-  body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:15px/1.55 'Inter',-apple-system,BlinkMacSystemFont,sans-serif;}
+  body{
+    margin:0;
+    padding:0;
+    background:var(--bg);
+    color:var(--ink);
+    font:15px/1.55 'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
   h1,h2,.brand-word,.label{font-family:'Poppins',sans-serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
-  #brandbar{background:var(--navy);padding:16px 28px;display:flex;align-items:center;gap:12px;}
-  .brand-word{font-size:17px;font-weight:700;color:#fff;letter-spacing:0.01em;}
+
+  #brandbar{
+    background:var(--navy);
+    padding:16px 28px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .brand-word{
+    font-size:17px;
+    font-weight:700;
+    color:#fff;
+    letter-spacing:0.01em;
+  }
   .brand-word span{color:var(--gold);}
-  .wrap{max-width:880px;margin:0 auto;padding-inline:20px;padding-block:44px 56px;}
-  header.intro{margin-bottom:34px;}
-  .kicker{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--sub);margin-bottom:10px;}
-  h1{font-size:26px;margin:0 0 8px;color:var(--navy);}
-  .lede{color:var(--sub);font-size:15px;max-width:60ch;margin:0;}
-  .lesson-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:22px;}
-  .lesson-meta{color:var(--sub);font-size:13px;margin-bottom:4px;}
-  h2{font-size:20px;margin:0 0 18px;color:var(--navy);}
-  .switcher{display:flex;flex-wrap:wrap;gap:22px;margin-bottom:20px;}
-  .switch-group{display:flex;flex-direction:column;gap:8px;}
-  .switch-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--sub);font-weight:500;}
-  .switch-pills{display:flex;gap:6px;}
-  .pill{border:1.5px solid var(--line);background:#fff;color:var(--ink);font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;padding:8px 16px;border-radius:20px;cursor:pointer;transition:all .15s ease;}
+
+  .wrap{
+    max-width:1400px;
+    margin:0 auto;
+    padding-inline:20px;
+    padding-block:36px 56px;
+  }
+
+  header.intro{margin-bottom:28px;}
+  .kicker{
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:500;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--sub);
+    margin-bottom:10px;
+  }
+  h1{font-size:26px; margin:0 0 8px; color:var(--navy);}
+  .lede{color:var(--sub); font-size:15px; max-width:70ch; margin:0;}
+
+  .lesson-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:26px 28px;
+  }
+  .lesson-meta{color:var(--sub); font-size:13px; margin-bottom:4px;}
+  h2{font-size:20px; margin:0 0 18px; color:var(--navy);}
+
+  .switcher{display:flex; flex-wrap:wrap; gap:22px; margin-bottom:22px;}
+  .switch-group{display:flex; flex-direction:column; gap:8px;}
+  .switch-label{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--sub); font-weight:500;
+  }
+  .switch-pills{display:flex; gap:6px;}
+  .pill{
+    border:1.5px solid var(--line); background:#fff; color:var(--ink);
+    font-family:'Inter',sans-serif; font-size:13.5px; font-weight:600;
+    padding:8px 16px; border-radius:20px; cursor:pointer; transition:all .15s ease;
+  }
   .pill:hover{border-color:var(--navy);}
-  .pill.active{background:var(--navy);border-color:var(--navy);color:var(--gold);}
-  .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:4px;}
-  .btn{display:inline-block;background:var(--gold);color:var(--navy);font-weight:700;font-size:14px;padding:11px 20px;border-radius:22px;text-decoration:none;border:none;cursor:pointer;}
-  .btn:hover{filter:brightness(1.04);}
-  .note{color:var(--sub);font-size:12.5px;margin-top:4px;}
+  .pill.active{background:var(--navy); border-color:var(--navy); color:var(--gold);}
+
+  .note{color:var(--sub); font-size:12.5px; margin:0 0 8px;}
   .note.missing{color:#B91C1C;}
-  video, iframe.video-embed{width:100%;aspect-ratio:16/9;border-radius:10px;border:1px solid var(--line);margin-top:16px;background:#000;}
-  footer{color:var(--sub);font-size:12.5px;margin-top:36px;}
+
+  .panels{display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;}
+  .panel{flex:1 1 460px; min-width:320px;}
+  .panel-label{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:8px;
+  }
+  .panel-title{font-size:12.5px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:.05em;}
+  .open-new{font-size:12px; color:var(--sub); text-decoration:none;}
+  .open-new:hover{color:var(--navy); text-decoration:underline;}
+
+  iframe.deck-embed{
+    width:100%; aspect-ratio:1040/660; border-radius:12px; border:1px solid var(--line);
+    background:#EDEEF0;
+  }
+  iframe.video-embed{
+    width:100%; aspect-ratio:16/9; border-radius:12px; border:1px solid var(--line);
+    background:#000;
+  }
+
+  footer{color:var(--sub); font-size:12.5px; margin-top:28px;}
+
+  @media (max-width: 900px){
+    .panels{flex-direction:column;}
+    .panel{flex:1 1 auto; width:100%;}
+  }
 </style>
 </head>
 <body>
-<div id="brandbar"><span class="brand-word">Mobi<span style="color:var(--gold);">Tutor</span>ZA</span></div>
+<div id="brandbar">
+  <span class="brand-word">Mobi<span style="color:var(--gold);">Tutor</span>ZA</span>
+</div>
 <div class="wrap">
   <header class="intro">
     <span class="kicker">Internal review</span>
     <h1>Lesson review for Ryan</h1>
-    <p class="lede">An interactive lesson deck plus a narrated video, produced with the MobiTutorZA pipeline. Have a look through and send feedback whenever suits.</p>
+    <p class="lede">Interactive lesson deck and narrated video side by side, produced with the MobiTutorZA pipeline. Switch language or narrator below — both panels update together.</p>
   </header>
+
   <div class="lesson-card">
     <div class="lesson-meta">Lesson 1 &middot; Grade 10 Mathematics, analytical geometry</div>
     <h2>Distance, gradient &amp; midpoint</h2>
+
     <div class="switcher">
       <div class="switch-group">
         <span class="switch-label">Language</span>
@@ -66,40 +149,95 @@
         </div>
       </div>
     </div>
-    <div class="actions"><a class="btn" id="deck-link" href="https://mobitutor-lesson1-trystin-viviers-projects.vercel.app/" target="_blank" rel="noopener">Open interactive lesson &rarr;</a></div>
-    <div class="note" id="video-note">Narrated video</div>
-    <div id="video-holder"><iframe class="video-embed" id="video-frame" src="https://drive.google.com/file/d/10RQQAYTEblIjQzgofqfwaTOrHQylJrs4/preview" allow="autoplay"></iframe></div>
+
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-label">
+          <span class="panel-title">Interactive lesson</span>
+          <a class="open-new" id="deck-link" href="#" target="_blank" rel="noopener">Open in new tab &nearr;</a>
+        </div>
+        <iframe class="deck-embed" id="deck-frame" src="" title="Interactive lesson deck"></iframe>
+      </div>
+      <div class="panel">
+        <div class="panel-label">
+          <span class="panel-title">Narrated video</span>
+        </div>
+        <div class="note" id="video-note"></div>
+        <div id="video-holder"></div>
+      </div>
+    </div>
   </div>
+
   <footer>Built for internal review, not for public distribution.</footer>
 </div>
+
 <script>
 const COMBOS = {
-  'en-m': {deck:'https://mobitutor-lesson1-trystin-viviers-projects.vercel.app/', video:'https://drive.google.com/file/d/10RQQAYTEblIjQzgofqfwaTOrHQylJrs4/preview', label:'English \u2014 George (male)'},
-  'en-f': {deck:'https://mobitutor-lesson1-trystin-viviers-projects.vercel.app/', video:'https://drive.google.com/file/d/122VSxhCg1oLSaFBIkglgXQdiF7kTXC6a/preview', label:'English \u2014 Matilda (female)'},
-  'af-m': {deck:'deck-af.html', video:'https://drive.google.com/file/d/1QTi3E4hxVHsIq3PZVVTtP__fRhkP8F76/preview', label:'Afrikaans \u2014 Paul (male)'},
-  'af-f': {deck:'deck-af.html', video:'https://drive.google.com/file/d/1S6X688kiToQSJG24SP72bTdDgln6Z23B/preview', label:'Afrikaans \u2014 Annelise (female)'}
+  'en-m': {
+    deck: 'https://mobitutor-lesson1-trystin-viviers-projects.vercel.app/',
+    video: 'https://drive.google.com/file/d/10RQQAYTEblIjQzgofqfwaTOrHQylJrs4/preview',
+    label: 'English \u2014 George (male)'
+  },
+  'en-f': {
+    deck: 'https://mobitutor-lesson1-trystin-viviers-projects.vercel.app/',
+    video: 'https://drive.google.com/file/d/122VSxhCg1oLSaFBIkglgXQdiF7kTXC6a/preview',
+    label: 'English \u2014 Matilda (female)'
+  },
+  'af-m': {
+    deck: 'deck-af.html',
+    video: 'https://drive.google.com/file/d/1QTi3E4hxVHsIq3PZVVTtP__fRhkP8F76/preview',
+    label: 'Afrikaans \u2014 Paul (male)'
+  },
+  'af-f': {
+    deck: 'deck-af.html',
+    video: 'https://drive.google.com/file/d/1S6X688kiToQSJG24SP72bTdDgln6Z23B/preview',
+    label: 'Afrikaans \u2014 Annelise (female)'
+  }
 };
-let lang='en', voice='m';
-function key(){ return lang+'-'+voice; }
+
+let lang = 'en', voice = 'm';
+let deckLoadedFor = null;
+
+function key(){ return lang + '-' + voice; }
+
 function render(){
-  document.querySelectorAll('#lang-pills .pill').forEach(b=>b.classList.toggle('active', b.dataset.lang===lang));
-  document.querySelectorAll('#voice-pills .pill').forEach(b=>b.classList.toggle('active', b.dataset.voice===voice));
+  document.querySelectorAll('#lang-pills .pill').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.querySelectorAll('#voice-pills .pill').forEach(b => b.classList.toggle('active', b.dataset.voice === voice));
+
   const combo = COMBOS[key()];
+
   document.getElementById('deck-link').href = combo.deck;
-  const holder = document.getElementById('video-holder');
+  if(deckLoadedFor !== combo.deck){
+    document.getElementById('deck-frame').src = combo.deck;
+    deckLoadedFor = combo.deck;
+  }
+
   const noteEl = document.getElementById('video-note');
+  const holder = document.getElementById('video-holder');
   if(combo.video){
-    noteEl.textContent = 'Narrated video \u2014 ' + combo.label;
+    noteEl.textContent = combo.label;
     noteEl.classList.remove('missing');
-    holder.innerHTML = '<iframe class="video-embed" id="video-frame" src="'+combo.video+'" allow="autoplay"></iframe>';
+    holder.innerHTML = '<iframe class="video-embed" src="' + combo.video + '" allow="autoplay" title="Narrated video"></iframe>';
   } else {
     noteEl.textContent = combo.label + ' \u2014 video not yet hosted';
     noteEl.classList.add('missing');
     holder.innerHTML = '';
   }
 }
-document.getElementById('lang-pills').addEventListener('click', e=>{ const btn=e.target.closest('button[data-lang]'); if(!btn) return; lang=btn.dataset.lang; render(); });
-document.getElementById('voice-pills').addEventListener('click', e=>{ const btn=e.target.closest('button[data-voice]'); if(!btn) return; voice=btn.dataset.voice; render(); });
+
+document.getElementById('lang-pills').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-lang]');
+  if(!btn) return;
+  lang = btn.dataset.lang;
+  render();
+});
+document.getElementById('voice-pills').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-voice]');
+  if(!btn) return;
+  voice = btn.dataset.voice;
+  render();
+});
+
 render();
 </script>
 </body>
